@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Speech２Text Sample Streming</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+  </head>
+  <body>
+    <h1>Speech API Streming + Socket.io Sample</h1>
+    <button onclick="startRecording()">マイク録音開始</button>
+    <button onclick="endRecording()">マイク録音終了</button>
+    <hr>
+    <script>
+        let socket = io();
+        // socket.on('transcription', (transcription) => {
+        //     $('#transcription').text(transcription);
+        // });
+
+        // クロスブラウザ定義
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+        // 変数定義
+        let localMediaStream = null;
+        let localScriptProcessor = null;
+        let audioContext = new AudioContext();
+        let bufferSize = 1024;
+        let audioData = []; // 録音データ
+        let recordingFlg = false;
+
+        // 録音バッファ作成（録音中自動で繰り返し呼び出される）
+        let onAudioProcess = e => {
+            if (!recordingFlg) return;
+
+            // 音声のバッファを作成
+            let input = e.inputBuffer.getChannelData(0);
+            let bufferData = new Float32Array(bufferSize);
+            for (let i = 0; i < bufferSize; i++) {
+                bufferData[i] = input[i];
+            }
+            // audioData.push(bufferData);
+            socket.emit('voice', bufferData);
+        };
+
+        // 解析開始
+        let startRecording = () => {
+            recordingFlg = true;
+            navigator.getUserMedia({audio: true}, stream => {
+                // 録音関連
+                localMediaStream = stream;
+                let scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+                localScriptProcessor = scriptProcessor;
+                let mediastreamsource = audioContext.createMediaStreamSource(stream);
+                mediastreamsource.connect(scriptProcessor);
+                scriptProcessor.onaudioprocess = onAudioProcess;
+                scriptProcessor.connect(audioContext.destination);
+            },
+            e => {});
+        };
+
+        // 解析終了
+        let endRecording = () => {
+            recordingFlg = false;
+        };
+    </script>
+  </body>
+</html>
