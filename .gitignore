@@ -1,3 +1,9 @@
 credentials.json
 node_modules
 .vscode
+
+# .idea
+.idea/**.xml
+.idea/**.iml
+.idea/dictionaries
+.idea/inspectionProfiles

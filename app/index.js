@@ -1,4 +1,4 @@
-let express = require('express')
+let express = require('express');
 let app = express();
 let http = require('http').Server(app);
 const io = require('socket.io')(http);

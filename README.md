@@ -1,7 +1,6 @@
-# StreamingSpeech2TextByWithNodeJS
+# streaming-speech2text
 
-This is sample code change streaming speech to text by NodeJS.
-
+This is sample code that change voice data to text.(Cloud Speech-to-Text streaming)
 
 ## Premise
 
